@@ -85,15 +85,17 @@ async def ingest_documents(dry_run=False):
             logging.info(f"Inserting into database...")
             async with pool.acquire() as conn:
                 for i, (chunk, embedding) in enumerate(zip(chunks, embeddings)):
+                    # Convert embedding list to string format for pgvector
+                    embedding_str = "[" + ",".join(str(x) for x in embedding) + "]"
                     await conn.execute(
                         """
                         INSERT INTO chunks (doc_name, chunk_index, chunk_text, embedding)
-                        VALUES ($1, $2, $3, $4)
+                        VALUES ($1, $2, $3, $4::vector)
                         """,
                         file_path.name,
                         i,
                         chunk,
-                        embedding,
+                        embedding_str,
                     )
 
             total_chunks += len(chunks)

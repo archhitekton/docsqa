@@ -32,7 +32,8 @@ def chunk_text(text: str, max_tokens: int = 500, overlap: int = 50) -> list[str]
 
         # Move start by (max_tokens - overlap) for next chunk
         start = end - overlap
-        if start >= len(tokens):
+        # Prevent infinite loop: if we can't advance, skip to end
+        if start <= 0:
             break
 
     result = [c for c in chunks if c]
