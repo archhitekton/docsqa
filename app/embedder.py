@@ -1,5 +1,8 @@
 import os
+import logging
 import voyageai
+
+logger = logging.getLogger(__name__)
 
 
 class VoyageEmbedder:
@@ -14,11 +17,13 @@ class VoyageEmbedder:
 
     def embed_documents(self, texts: list[str]) -> list[list[float]]:
         """Embed document chunks with input_type='document'."""
+        logger.debug(f"Embedding {len(texts)} documents with Voyage API")
         response = self.client.embed(
             texts,
             model=self.model,
             input_type="document",
         )
+        logger.debug(f"Received {len(response.embeddings)} embeddings")
         return response.embeddings
 
     def embed_query(self, text: str) -> list[float]:
@@ -45,13 +50,18 @@ def get_embedder():
 async def embed_batch(texts: list[str]) -> list[list[float]]:
     """Batch embed document chunks."""
     embedder = get_embedder()
-    # Batch by 128 as per spec
     batch_size = 128
     all_embeddings = []
+    num_batches = (len(texts) + batch_size - 1) // batch_size
 
-    for i in range(0, len(texts), batch_size):
-        batch = texts[i : i + batch_size]
+    logger.info(f"Embedding {len(texts)} texts in {num_batches} batches of {batch_size}")
+
+    for i, start in enumerate(range(0, len(texts), batch_size)):
+        end = min(start + batch_size, len(texts))
+        batch = texts[start:end]
+        logger.debug(f"Batch {i+1}/{num_batches}: embedding {len(batch)} texts")
         embeddings = embedder.embed_documents(batch)
         all_embeddings.extend(embeddings)
 
+    logger.info(f"Completed embedding {len(all_embeddings)} texts")
     return all_embeddings

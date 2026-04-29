@@ -1,4 +1,7 @@
 import tiktoken
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def chunk_text(text: str, max_tokens: int = 500, overlap: int = 50) -> list[str]:
@@ -13,8 +16,10 @@ def chunk_text(text: str, max_tokens: int = 500, overlap: int = 50) -> list[str]
     Returns:
         List of chunk strings
     """
+    logger.debug(f"Encoding text: {len(text)} chars")
     enc = tiktoken.get_encoding("cl100k_base")
     tokens = enc.encode(text)
+    logger.debug(f"Tokenized: {len(tokens)} tokens")
 
     chunks = []
     start = 0
@@ -30,4 +35,6 @@ def chunk_text(text: str, max_tokens: int = 500, overlap: int = 50) -> list[str]
         if start >= len(tokens):
             break
 
-    return [c for c in chunks if c]  # Filter empty chunks
+    result = [c for c in chunks if c]
+    logger.info(f"Created {len(result)} chunks from {len(tokens)} tokens")
+    return result

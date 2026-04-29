@@ -23,9 +23,13 @@ build:
 	docker build -t rag-qa-engine .
 
 run:
-	docker run --env-file .env -p 8000:8000 rag-qa-engine
+	set -a && source ~/.claude/credentials/credentials.env && set +a && \
+	export DATABASE_URL="postgresql://postgres:postgres@localhost:5432/postgres" && \
+	uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 ingest:
+	set -a && source ~/.claude/credentials/credentials.env && set +a && \
+	export DATABASE_URL="postgresql://postgres:postgres@localhost:5432/postgres" && \
 	uv run python scripts/ingest.py
 
 query:
@@ -33,13 +37,18 @@ query:
 		echo "Usage: make query Q=\"Your question here\""; \
 		exit 1; \
 	fi
-	uv run python -c "import asyncio; from scripts.query import main; asyncio.run(main('$(Q)'))"
+	@curl -s -N -X POST http://localhost:8000/query \
+		-H "Content-Type: application/json" \
+		-d '{"question": "$(Q)"}' | grep -v '^: ' | sed 's/^data: //' | \
+		awk 'BEGIN {RS="\n"; getline; exit} {if ($$0 != "[DONE]" && $$0 ~ /^\{/) {cmd="jq .sources 2>/dev/null"; print | cmd; close(cmd)} else if ($$0 != "[DONE]") print $$0}'
 
 eval:
+	set -a && source ~/.claude/credentials/credentials.env && set +a && \
+	export DATABASE_URL="postgresql://postgres:postgres@localhost:5432/postgres" && \
 	uv run python scripts/eval.py
 
 demo:
-	@uv run python -c "import asyncio; from scripts.query import main; asyncio.run(main('What is the main purpose of this system?'))"
+	@$(MAKE) query Q="What is the main purpose of this document?"
 
 deploy:
 	fly deploy
