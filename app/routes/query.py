@@ -1,49 +1,25 @@
 import logging
-from fastapi import APIRouter, HTTPException
-from fastapi.responses import StreamingResponse
+from fastapi import APIRouter
 import json
 
 from app.models import QueryRequest, FallbackResponse, Source
 from app.db import get_pool
 from app.embedder import get_embedder
 from app.retriever import retrieve
-from app.llm import stream_answer
+from app.llm import get_answer
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
 
-async def stream_response_generator(question: str, chunks):
-    """Generate SSE stream: token chunks, then [DONE], then sources JSON."""
-    # Stream answer tokens
-    async for token in stream_answer(question, chunks):
-        yield f"data: {json.dumps({'token': token})}\n\n"
-
-    # Final marker
-    yield "data: [DONE]\n\n"
-
-    # Sources
-    sources = [
-        Source(
-            filename=chunk.doc_name,
-            heading_path=chunk.heading_path,
-            chunk_id=chunk.id,
-            excerpt=chunk.chunk_text[:200],  # First 200 chars as excerpt
-        )
-        for chunk in chunks
-    ]
-    sources_json = json.dumps({"sources": [s.model_dump() for s in sources]})
-    yield f"data: {sources_json}\n\n"
-
-
 @router.post("/query")
 async def query(request: QueryRequest):
-    """Query the RAG system with streaming response.
+    """Query the RAG system with JSON response.
 
     Returns:
-    - If chunks pass min_score: SSE stream with tokens, [DONE] marker, then sources
-    - If no chunks pass: Regular JSON fallback response (no streaming)
+    - If chunks pass min_score: {"answer": "...", "sources": [...]}
+    - If no chunks pass: {"answer": "I don't have...", "sources": []}
     """
     logger.info(f"Query: {request.question[:60]}...")
 
@@ -77,9 +53,23 @@ async def query(request: QueryRequest):
         )
         return fallback
 
-    # Stream answer with sources
-    logger.info(f"Streaming answer with {len(chunks)} chunks")
-    return StreamingResponse(
-        stream_response_generator(request.question, chunks),
-        media_type="text/event-stream",
-    )
+    # Get answer from Claude
+    logger.info(f"Getting answer from Claude with {len(chunks)} chunks")
+    answer = await get_answer(request.question, chunks)
+
+    # Build sources
+    sources = [
+        Source(
+            filename=chunk.doc_name,
+            heading_path=chunk.heading_path,
+            chunk_id=chunk.id,
+            excerpt=chunk.chunk_text[:200],  # First 200 chars as excerpt
+        )
+        for chunk in chunks
+    ]
+
+    logger.info(f"Returning answer with {len(sources)} sources")
+    return {
+        "answer": answer,
+        "sources": [s.model_dump() for s in sources],
+    }

@@ -50,3 +50,22 @@ async def stream_answer(
         for text in stream.text_stream:
             logger.debug(f"Streamed token: {len(text)} chars")
             yield text
+
+
+async def get_answer(question: str, chunks: list[Chunk]) -> str:
+    """Get complete answer from Claude (non-streaming)."""
+    system_prompt, user_prompt = build_prompt(question, chunks)
+
+    client = anthropic.Anthropic()
+    logger.info(f"Calling Claude with {len(chunks)} context chunks")
+
+    message = client.messages.create(
+        model="claude-haiku-4-5",
+        max_tokens=1024,
+        system=system_prompt,
+        messages=[{"role": "user", "content": user_prompt}],
+    )
+
+    answer = message.content[0].text
+    logger.info(f"Claude response: {len(answer)} chars")
+    return answer
