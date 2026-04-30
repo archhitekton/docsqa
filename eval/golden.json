@@ -1,0 +1,140 @@
+[
+  {
+    "question": "What is a recursive function?",
+    "expected": "A recursive function is a function that calls itself to solve smaller instances of the same problem",
+    "relevant_doc": "Think_Python_2e.pdf",
+    "answerable": true
+  },
+  {
+    "question": "How do you define a function in Python?",
+    "expected": "Functions are defined using the def keyword followed by the function name, parameters, and a colon",
+    "relevant_doc": "Think_Python_2e.pdf",
+    "answerable": true
+  },
+  {
+    "question": "What is an operating system kernel?",
+    "expected": "The kernel is the core component of an operating system that manages hardware resources and system calls",
+    "relevant_doc": "Think_OS.pdf",
+    "answerable": true
+  },
+  {
+    "question": "What are the main responsibilities of an OS scheduler?",
+    "expected": "The scheduler determines which process runs when and manages CPU time allocation among processes",
+    "relevant_doc": "Think_OS.pdf",
+    "answerable": true
+  },
+  {
+    "question": "What is a Fourier transform?",
+    "expected": "The Fourier transform decomposes a signal into its constituent frequencies",
+    "relevant_doc": "Think_DSP.pdf",
+    "answerable": true
+  },
+  {
+    "question": "What is the difference between lists and tuples in Python?",
+    "expected": "Lists are mutable (can be modified) while tuples are immutable (cannot be changed after creation)",
+    "relevant_doc": "Think_Python_2e.pdf",
+    "answerable": true
+  },
+  {
+    "question": "What is a dictionary in Python?",
+    "expected": "A dictionary is a collection of key-value pairs that allows fast lookup of values by their keys",
+    "relevant_doc": "Think_Python_2e.pdf",
+    "answerable": true
+  },
+  {
+    "question": "What is an interrupt in operating systems?",
+    "expected": "An interrupt is a signal to the processor to pause execution and handle an urgent event",
+    "relevant_doc": "Think_OS.pdf",
+    "answerable": true
+  },
+  {
+    "question": "What is digital signal processing?",
+    "expected": "Digital signal processing involves analyzing and manipulating digital signals using mathematical techniques",
+    "relevant_doc": "Think_DSP.pdf",
+    "answerable": true
+  },
+  {
+    "question": "How does string slicing work in Python?",
+    "expected": "String slicing allows you to extract a substring using bracket notation with start:end indices",
+    "relevant_doc": "Think_Python_2e.pdf",
+    "answerable": true
+  },
+  {
+    "question": "What is process scheduling?",
+    "expected": "Process scheduling is the OS mechanism for managing when processes access the CPU",
+    "relevant_doc": "Think_OS.pdf",
+    "answerable": true
+  },
+  {
+    "question": "What is a spectrum?",
+    "expected": "A spectrum represents the amplitude of each frequency component in a signal",
+    "relevant_doc": "Think_DSP.pdf",
+    "answerable": true
+  },
+  {
+    "question": "What is a class in object-oriented programming?",
+    "expected": "A class is a blueprint for creating objects that encapsulates data (attributes) and methods (functions)",
+    "relevant_doc": "Think_Python_2e.pdf",
+    "answerable": true
+  },
+  {
+    "question": "What is virtual memory?",
+    "expected": "Virtual memory is a memory management technique that gives processes the illusion of having more memory than physically available",
+    "relevant_doc": "Think_OS.pdf",
+    "answerable": true
+  },
+  {
+    "question": "What is windowing in signal processing?",
+    "expected": "Windowing applies a window function to a signal segment to reduce spectral leakage during Fourier analysis",
+    "relevant_doc": "Think_DSP.pdf",
+    "answerable": true
+  },
+  {
+    "question": "What is exception handling in Python?",
+    "expected": "Exception handling uses try-except blocks to catch and handle errors gracefully",
+    "relevant_doc": "Think_Python_2e.pdf",
+    "answerable": true
+  },
+  {
+    "question": "What is a context switch in operating systems?",
+    "expected": "A context switch is when the OS saves the state of one process and loads the state of another",
+    "relevant_doc": "Think_OS.pdf",
+    "answerable": true
+  },
+  {
+    "question": "What is aliasing in signal processing?",
+    "expected": "Aliasing occurs when a signal is sampled below the Nyquist rate, causing high frequencies to appear as lower frequencies",
+    "relevant_doc": "Think_DSP.pdf",
+    "answerable": true
+  },
+  {
+    "question": "What is a generator in Python?",
+    "expected": "A generator is a function that yields values one at a time and maintains state between calls",
+    "relevant_doc": "Think_Python_2e.pdf",
+    "answerable": true
+  },
+  {
+    "question": "What is a cache in operating systems?",
+    "expected": "A cache is fast memory that stores frequently accessed data to improve access performance",
+    "relevant_doc": "Think_OS.pdf",
+    "answerable": true
+  },
+  {
+    "question": "Who won the 2024 FIFA World Cup?",
+    "expected": null,
+    "relevant_doc": null,
+    "answerable": false
+  },
+  {
+    "question": "What is the current population of Mars?",
+    "expected": null,
+    "relevant_doc": null,
+    "answerable": false
+  },
+  {
+    "question": "How do I cook a pizza?",
+    "expected": null,
+    "relevant_doc": null,
+    "answerable": false
+  }
+]

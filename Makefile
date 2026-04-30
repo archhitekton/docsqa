@@ -44,7 +44,7 @@ query:
 
 eval:
 	@set -a && source ~/.claude/credentials/credentials.env && set +a && \
-	python scripts/eval.py
+	uv run python scripts/eval.py
 
 demo:
 	@$(MAKE) query Q="What is a recursive function?"
