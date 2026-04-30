@@ -47,6 +47,7 @@ eval:
 	uv run python scripts/eval.py
 
 demo:
+	@echo "Running demo query..."
 	@$(MAKE) query Q="What is a recursive function?"
 
 deploy:
