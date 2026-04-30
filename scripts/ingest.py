@@ -51,8 +51,6 @@ async def ingest_documents(dry_run=False):
 
         # Find all converted markdown files
         files = sorted(converted_dir.glob("*.md"))
-        # Filter: only ingest test.md for now (fast iteration)
-        files = [f for f in files if f.name == "test.md"]
         logger.info(f"Found {len(files)} markdown files to ingest")
 
         if not files:
