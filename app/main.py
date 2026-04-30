@@ -5,6 +5,10 @@ from fastapi import FastAPI
 from app.db import init_pool, close_pool
 from app.routes.query import router as query_router
 
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s | %(name)s | %(levelname)s | %(message)s',
+)
 logger = logging.getLogger(__name__)
 
 

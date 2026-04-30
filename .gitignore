@@ -30,5 +30,6 @@ env/
 .coverage
 htmlcov/
 
-# Claude
-.claude/scripts/validate_ingest.py
+# Local testing
+scripts/validate_ingest.py
+scripts/demo.py

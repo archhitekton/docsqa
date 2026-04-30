@@ -40,6 +40,14 @@ async def retrieve(
     for row in rows:
         score = row["score"]
         if score >= min_score:
+            # Parse pgvector string representation to list of floats
+            emb_str = row["embedding"]
+            if isinstance(emb_str, str):
+                # Parse "[x,y,z,...]" format
+                emb_list = [float(x) for x in emb_str.strip("[]").split(",")]
+            else:
+                emb_list = list(emb_str)
+
             chunks.append(
                 Chunk(
                     id=row["id"],
@@ -47,7 +55,7 @@ async def retrieve(
                     chunk_index=row["chunk_index"],
                     heading_path=row["heading_path"],
                     chunk_text=row["chunk_text"],
-                    embedding=list(row["embedding"]),  # pgvector returns as list
+                    embedding=emb_list,
                     score=score,
                 )
             )

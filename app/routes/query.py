@@ -48,11 +48,13 @@ async def query(request: QueryRequest):
     logger.info(f"Query: {request.question[:60]}...")
 
     # Embed question
+    logger.info(f"Embedding question: {request.question[:60]}...")
     embedder = get_embedder()
     question_embedding = embedder.embed_query(request.question)
-    logger.debug(f"Question embedded: {len(question_embedding)} dims")
+    logger.info(f"Question embedded: {len(question_embedding)} dims")
 
     # Retrieve chunks
+    logger.info(f"Retrieving chunks (top_k={request.top_k}, min_score={request.min_score})...")
     pool = get_pool()
     chunks = await retrieve(
         question_embedding=question_embedding,
@@ -60,6 +62,7 @@ async def query(request: QueryRequest):
         min_score=request.min_score,
         pool=pool,
     )
+    logger.info(f"Retrieved {len(chunks)} chunks from database")
 
     # Fallback: no chunks passed threshold
     if not chunks:
