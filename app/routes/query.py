@@ -54,12 +54,14 @@ async def query(request: QueryRequest):
     logger.info(f"Question embedded: {len(question_embedding)} dims")
 
     # Retrieve chunks with reranking
-    logger.info(f"Retrieving chunks (top_k={request.top_k}, min_score={request.min_score})...")
+    # Reranker uses stricter scoring, so lower threshold
+    reranker_min_score = 0.25
+    logger.info(f"Retrieving chunks (top_k={request.top_k}, min_score={reranker_min_score} with reranking)...")
     pool = get_pool()
     chunks = await retrieve(
         question_embedding=question_embedding,
         top_k=request.top_k,
-        min_score=request.min_score,
+        min_score=reranker_min_score,
         pool=pool,
         question=request.question,
         use_reranker=True,
