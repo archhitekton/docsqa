@@ -22,6 +22,11 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+def embedding_to_pgvector(embedding: list[float]) -> str:
+    """Convert embedding list to pgvector string format."""
+    return "[" + ",".join(f"{x:.10f}" for x in embedding) + "]"
+
+
 async def ingest_documents(dry_run=False):
     """Ingest pre-converted markdown from docs/converted/ directory."""
     if dry_run:
@@ -46,6 +51,8 @@ async def ingest_documents(dry_run=False):
 
         # Find all converted markdown files
         files = sorted(converted_dir.glob("*.md"))
+        # Filter: only ingest test.md for now (fast iteration)
+        files = [f for f in files if f.name == "test.md"]
         logger.info(f"Found {len(files)} markdown files to ingest")
 
         if not files:
@@ -95,7 +102,7 @@ async def ingest_documents(dry_run=False):
                         i,
                         chunk.heading_path,
                         chunk.text,
-                        embedding,
+                        embedding_to_pgvector(embedding),
                     )
 
             total_chunks += len(chunks)
