@@ -1,3 +1,6 @@
+-- Enable pgvector extension (required for vector type)
+CREATE EXTENSION IF NOT EXISTS vector;
+
 -- Create chunks table with pgvector support
 CREATE TABLE IF NOT EXISTS chunks (
     id SERIAL PRIMARY KEY,

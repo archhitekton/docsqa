@@ -7,24 +7,27 @@ logger = logging.getLogger(__name__)
 
 
 def build_prompt(question: str, chunks: list[Chunk]) -> tuple[str, str]:
-    """Build system and user prompts with retrieved context."""
-    context = "\n\n".join(
-        [
-            f"[{chunk.doc_name}#{chunk.chunk_index}]\n{chunk.chunk_text}"
-            for chunk in chunks
-        ]
-    )
+    """Build system and user prompts with retrieved context and source labels."""
+    # Format context with source labels: [filename#chunk_id]
+    context_parts = []
+    for chunk in chunks:
+        source_label = f"[{chunk.doc_name}#{chunk.chunk_index}]"
+        if chunk.heading_path:
+            source_label += f" ({chunk.heading_path})"
+        context_parts.append(f"{source_label}\n{chunk.chunk_text}")
+
+    context = "\n\n".join(context_parts)
 
     system_prompt = """You are a helpful assistant that answers questions based on provided documents.
-Answer the question using only the provided context. If the context doesn't contain enough information,
-say so clearly. Always cite your sources using the format [filename#chunk_id]."""
+Answer the question using only the provided context. Be concise and direct.
+Always cite your sources using the format [filename#chunk_id] when referencing specific information."""
 
     user_prompt = f"""Question: {question}
 
 Context:
 {context}
 
-Answer the question based on the provided context."""
+Answer the question based on the provided context. If the context is insufficient to answer, say so."""
 
     return system_prompt, user_prompt
 

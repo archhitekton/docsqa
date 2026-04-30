@@ -18,7 +18,9 @@ async def init_pool():
         raise ValueError("DATABASE_URL or DOCSQA_DATABASE_URL environment variable not set")
 
     logger.info("Initializing database pool...")
-    _pool = await asyncpg.create_pool(database_url)
+    # Supabase uses pgbouncer (transaction pooler) which doesn't support prepared statements
+    # Disable statement cache to avoid DuplicatePreparedStatementError
+    _pool = await asyncpg.create_pool(database_url, statement_cache_size=0)
     logger.info("Pool created")
 
     # Run migrations
