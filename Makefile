@@ -22,19 +22,19 @@ build:
 	docker build -t rag-qa-engine .
 
 seed:
-	python scripts/seed.py
+	uv run python scripts/seed.py
 	@echo "Corpus ready in ./docs/ — run 'make convert' next"
 
 convert:
-	python scripts/convert.py
+	uv run python scripts/convert.py
 
 run:
 	@set -a && source ~/.claude/credentials/credentials.env && set +a && \
-	uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+	uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 ingest:
 	@set -a && source ~/.claude/credentials/credentials.env && set +a && \
-	python scripts/ingest.py
+	uv run python scripts/ingest.py
 
 query:
 	@if [ -z "$(Q)" ]; then \
