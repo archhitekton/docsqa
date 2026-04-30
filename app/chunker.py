@@ -97,12 +97,12 @@ def chunk_section(section: Section, max_tokens: int = 500, overlap: int = 50) ->
         if chunk_text:
             chunks.append(Chunk(heading_path=section.heading_path, text=chunk_text))
 
+        # Stop if we've reached the end
+        if end >= len(tokens):
+            break
+
         # Advance by (max_tokens - overlap)
         start = end - overlap
-
-        # Prevent infinite loop: if we can't advance, break
-        if start <= 0 or start >= len(tokens):
-            break
 
     return chunks
 
