@@ -69,7 +69,26 @@ Run `make eval` to generate latest results. Current baseline (20 answerable + 3 
 
 ## Live Demo
 
-[Link to deployed instance on Fly.io will be added in T7]
+**Deployed on Fly.io:** https://rag-qa-engine.fly.dev
+
+Try it:
+```bash
+# Answerable question (streaming response)
+curl -s -X POST https://rag-qa-engine.fly.dev/query \
+  -H "Content-Type: application/json" \
+  -d '{"question": "What is a recursive function?"}' \
+  -N | jq .
+
+# Unanswerable question (fallback JSON, no streaming)
+curl -s -X POST https://rag-qa-engine.fly.dev/query \
+  -H "Content-Type: application/json" \
+  -d '{"question": "Who won the 2024 World Cup?"}'
+```
+
+Health check:
+```bash
+curl https://rag-qa-engine.fly.dev/health
+```
 
 ## Demo Walkthrough
 
