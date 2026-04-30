@@ -42,7 +42,9 @@ query:
 		exit 1; \
 	fi
 	@set -a && source ~/.claude/credentials/credentials.env && set +a && \
-	curl -s -N -X POST http://localhost:8000/query \
+	curl -s -X POST http://localhost:8000/query \
+		-H "Content-Type: application/json" \
+		-d '{"question": "$(Q)"}' | jq '.' || curl -s -X POST http://localhost:8000/query \
 		-H "Content-Type: application/json" \
 		-d '{"question": "$(Q)"}'
 
