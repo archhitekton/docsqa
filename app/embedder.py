@@ -9,9 +9,9 @@ class VoyageEmbedder:
     """Voyage AI embeddings with input_type distinction for document/query."""
 
     def __init__(self, api_key: str = None, model: str = "voyage-3.5-lite"):
-        self.api_key = api_key or os.getenv("VOYAGE_API_KEY")
+        self.api_key = api_key or os.getenv("VOYAGE_API_KEY") or os.getenv("DOCSQA_VOYAGE_API_KEY")
         if not self.api_key:
-            raise ValueError("VOYAGE_API_KEY environment variable not set")
+            raise ValueError("VOYAGE_API_KEY or DOCSQA_VOYAGE_API_KEY environment variable not set")
         self.model = model
         self.client = voyageai.Client(api_key=self.api_key)
 
