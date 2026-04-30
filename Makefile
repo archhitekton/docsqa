@@ -1,4 +1,4 @@
-.PHONY: help build seed run ingest query eval demo deploy
+.PHONY: help build seed convert run ingest query eval demo deploy
 
 help:
 	@echo "RAG Q&A Engine - Available targets:"
@@ -6,10 +6,11 @@ help:
 	@echo "Setup:"
 	@echo "  make build      - Build Docker image"
 	@echo "  make seed       - Download corpus PDFs into ./docs/"
+	@echo "  make convert    - Convert PDFs to markdown (one-time)"
 	@echo ""
 	@echo "Development:"
 	@echo "  make run        - Run API locally (port 8000)"
-	@echo "  make ingest     - Ingest documents from ./docs/"
+	@echo "  make ingest     - Chunk + embed converted markdown, store in DB"
 	@echo "  make query      - Run a query (set Q=\"your question\")"
 	@echo "  make eval       - Run evaluation harness"
 	@echo "  make demo       - Run a canned demo query"
@@ -22,7 +23,10 @@ build:
 
 seed:
 	python scripts/seed.py
-	@echo "Corpus ready in ./docs/ — run 'make ingest' next"
+	@echo "Corpus ready in ./docs/ — run 'make convert' next"
+
+convert:
+	python scripts/convert.py
 
 run:
 	@set -a && source ~/.claude/credentials/credentials.env && set +a && \

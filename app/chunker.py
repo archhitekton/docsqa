@@ -4,6 +4,7 @@ import logging
 from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
+enc = tiktoken.get_encoding("cl100k_base")
 
 
 @dataclass
@@ -78,7 +79,6 @@ def chunk_section(section: Section, max_tokens: int = 500, overlap: int = 50) ->
     if not text:
         return []
 
-    enc = tiktoken.get_encoding("cl100k_base")
     tokens = enc.encode(text)
 
     if len(tokens) <= max_tokens:
