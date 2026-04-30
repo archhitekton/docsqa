@@ -31,4 +31,4 @@ env/
 htmlcov/
 
 # Claude
-.claude/
+.claude/scripts/validate_ingest.py
