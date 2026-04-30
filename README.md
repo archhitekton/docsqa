@@ -6,132 +6,69 @@ Engineering teams drown in internal documentation — RFCs, ADRs, runbooks, Conf
 
 ## Quick Start
 
-### Option A: Local Development (with Docker Postgres)
-
-1. **Clone & setup:**
-   ```bash
-   git clone <repo>
-   cd docsqa
-   uv sync
-   ```
-
-2. **Start Postgres with pgvector:**
-   ```bash
-   docker run -d --name docsqa-postgres \
-     -e POSTGRES_USER=postgres \
-     -e POSTGRES_PASSWORD=postgres \
-     -e POSTGRES_DB=postgres \
-     -p 5432:5432 \
-     pgvector/pgvector:pg17
-   ```
-
-3. **Set API credentials:**
-   ```bash
-   cp .env.example .env
-   # Edit .env with ANTHROPIC_API_KEY, VOYAGE_API_KEY
-   # DATABASE_URL is pre-configured for local Postgres
-   ```
-
-4. **Ingest documents:**
-   ```bash
-   mkdir -p docs
-   # Add .md or .pdf files to docs/
-   make ingest
-   ```
-
-5. **Start API:**
-   ```bash
-   make run
-   ```
-
-6. **Query:**
-   ```bash
-   make query Q="What is an ADR?"
-   ```
-
-### Option B: Production (Supabase)
-
-See [MIGRATE_TO_SUPABASE.md](docs/MIGRATE_TO_SUPABASE.md) for migrating to Supabase pgvector.
+```bash
+make build       # Build Docker image
+make seed        # Download corpus PDFs into ./docs/
+make ingest      # Chunk, embed, and store in Supabase
+make run         # Start API on localhost:8000
+make query Q="What is a recursive function?"
+```
 
 ## Architecture
 
 ```
-┌─────────────┐
-│  Documents  │
-│ (.md, .pdf) │
-└──────┬──────┘
-       │ scripts/ingest.py
-       ▼
-   ┌────────────────────┐
-   │ Chunking Strategy  │
-   │ (500 tokens + 50   │
-   │  token overlap)    │
-   └────────┬───────────┘
-            │
-            ▼
-   ┌────────────────────┐
-   │  Voyage AI 3.5-lite│
-   │  Embeddings        │
-   │  (input_type:doc)  │
-   └────────┬───────────┘
-            │
-            ▼
-   ┌─────────────────────┐
-   │  Postgres pgvector  │
-   │  (ivfflat index)    │
-   │  Local or Supabase  │
-   └─────────┬───────────┘
-             │
-             │ retriever.py
-             │
-   ┌─────────────────────┐
-   │  Query (FastAPI)    │
-   │  POST /query        │
-   │  Voyage Embed       │
-   │  (input_type:query) │
-   └────────┬────────────┘
-            │
-            ▼
-   ┌─────────────────────┐
-   │  Cosine Similarity  │
-   │  (top-k retrieval)  │
-   └────────┬────────────┘
-            │
-            ▼
-   ┌────────────────────────┐
-   │  Claude Haiku 4.5      │
-   │  Stream Answer         │
-   │  + Sources             │
-   └─────────────────────────┘
+Documents (PDF/Markdown)
+        ↓
+   [Convert to Markdown]
+        ↓
+[Heading-aware Chunking] ← heading_path breadcrumbs
+        ↓
+[Voyage AI Embeddings] ← input_type="document"
+        ↓
+[Supabase pgvector] ← 1024-dim, cosine similarity
+        ↓
+[Query Embedding] ← input_type="query"
+        ↓
+[Retrieval + Filter] ← min_score threshold
+        ↓
+[Claude Streaming] ← structured answer + sources
+        ↓
+[FastAPI Response] ← SSE format
 ```
+
+## Stack
+
+| Layer | Choice | Why |
+|---|---|---|
+| Language | Python 3.12 | Industry standard for AI engineering |
+| API | FastAPI | Native async + streaming support |
+| Vector DB | Supabase (pgvector) | Hosted, zero ops, asyncpg integration |
+| Embeddings | Voyage AI `voyage-3.5-lite` | Document/query input_type distinction |
+| LLM | Claude Haiku 4.5 | Fast, cheap, streaming |
+| PDF parsing | markitdown | Preserves heading hierarchy and structure |
+| Eval | Custom script + Claude-as-judge | No heavy framework needed |
 
 ## Eval Results
 
-(Added after T5)
+*(Results added after T5 completion)*
 
-- **Total questions:** 20
-- **Passed:** TBD
-- **Score:** TBD
-- **Precision@3:** TBD
-- **MRR:** TBD
-- **Avg cost/query:** TBD USD
-- **Avg latency:** TBD ms
+- **Score**: N/23 questions correct
+- **Hallucination Rate**: N/3 out-of-scope questions rejected
+- **Precision@3**: N%
+- **MRR**: N
+- **Cost/Query**: $N
 
 ## Live Demo
 
-(Added in T7)
+*(URL added in T7 after Fly.io deployment)*
 
-## Documentation
+## Loom Walkthrough
 
-- **[Setup Guide](docs/SETUP.md)** - Detailed local setup & troubleshooting
-- **[Migrate to Supabase](docs/MIGRATE_TO_SUPABASE.md)** - Production database migration
+*(Video link added in T6)*
 
 ## Next Steps
 
-- **Reranking:** Add Voyage `rerank-2.5-lite` cross-encoder for top-5 refinement
-- **Hybrid search:** Combine BM25 full-text search with vector similarity
-- **Auth:** Add API key authentication for multi-user deployment
-
----
-
-**Stack:** Python 3.12 | uv | FastAPI | Postgres pgvector | Voyage AI 3.5-lite | Anthropic Claude Haiku 4.5 | Docker
+- Reranking (Voyage `rerank-2.5-lite` cross-encoder)
+- Hybrid search (BM25 + vector)
+- Query rewriting / HyDE
+- Multi-user auth

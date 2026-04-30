@@ -1,8 +1,9 @@
 # Project-specific
-docs/spec.md
-CLAUDE.md
 .env
 .env.local
+docs/converted/
+docs/*.pdf
+eval/report.json
 
 # Python
 __pycache__/
