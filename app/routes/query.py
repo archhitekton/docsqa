@@ -53,7 +53,7 @@ async def query(request: QueryRequest):
     question_embedding = embedder.embed_query(request.question)
     logger.info(f"Question embedded: {len(question_embedding)} dims")
 
-    # Retrieve chunks
+    # Retrieve chunks with reranking
     logger.info(f"Retrieving chunks (top_k={request.top_k}, min_score={request.min_score})...")
     pool = get_pool()
     chunks = await retrieve(
@@ -61,6 +61,8 @@ async def query(request: QueryRequest):
         top_k=request.top_k,
         min_score=request.min_score,
         pool=pool,
+        question=request.question,
+        use_reranker=True,
     )
     logger.info(f"Retrieved {len(chunks)} chunks from database")
 
