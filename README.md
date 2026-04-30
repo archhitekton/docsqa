@@ -8,8 +8,9 @@ Engineering teams drown in internal documentation — RFCs, ADRs, runbooks, Conf
 
 ```bash
 make build       # Build Docker image
-make seed        # Download corpus (Think Python, Think OS, Think DSP)
-make ingest      # Chunk, embed, and store in Supabase pgvector
+make seed        # Download corpus PDFs (Think Python, Think OS, Think DSP)
+make convert     # Convert PDFs to Markdown (one-time, ~2 min)
+make ingest      # Chunk, embed, and store in Supabase pgvector (~2 min for all 3)
 make run         # Start API on localhost:8000
 make query Q="What is a recursive function?"
 ```

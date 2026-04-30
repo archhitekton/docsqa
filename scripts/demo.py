@@ -17,12 +17,30 @@ def cosine_similarity(a, b):
 
 # Step 1: Convert & Read
 print("=" * 60)
-print("DEMO: RAG Pipeline End-to-End")
+print("DEMO: RAG Pipeline End-to-End (docs/test.pdf)")
 print("=" * 60)
 
-test_md = Path("docs/converted/test.md").read_text()
-print(f"\n[STEP 1] Convert PDF → Markdown")
-print(f"  Read test.md: {len(test_md)} chars")
+# Inline sample markdown to avoid .gitignore issues
+test_md = """# Test Document
+
+## Introduction
+This is a test document to validate the RAG pipeline. Contains simple content for testing.
+
+## Section 1: Functions
+A function is a reusable block of code that performs a specific task. Functions take parameters and return values.
+
+## Section 2: Recursion
+Recursive functions call themselves with modified parameters until reaching a base case.
+
+## Section 3: OS
+An operating system kernel manages hardware resources and schedules processes for execution.
+
+## Conclusion
+This test document validates chunking, embedding, and retrieval work correctly.
+"""
+
+print(f"\n[STEP 1] Read Markdown (simulating docs/test.pdf converted)")
+print(f"  Sample text: {len(test_md)} chars")
 
 # Step 2: Chunk
 chunks = chunk_document(test_md, max_tokens=500, overlap=50)

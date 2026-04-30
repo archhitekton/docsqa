@@ -51,8 +51,8 @@ eval:
 	uv run python scripts/eval.py
 
 demo:
-	@echo "Running demo query..."
-	@$(MAKE) query Q="What is a recursive function?"
+	@echo "Running end-to-end pipeline demo (no API/DB needed)..."
+	uv run python scripts/demo.py
 
 deploy:
 	fly deploy
